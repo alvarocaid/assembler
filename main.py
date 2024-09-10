@@ -2,53 +2,39 @@ import re
 
 def extract_components(expr, variables):
     """
-    Extracts components from the POS expression, preserving variable order as per 'variables'.
-    Returns a list of lists, where each inner list represents a component.
+    Extracts components from the POS expression as a list of lists.
+    Each component is a list containing variables and their negations.
     """
-    # Replace + with a space to simplify splitting components
-    expr = expr.replace(' ', '').replace('+', ' + ').replace('*', ' * ')
-    
-    # Split the expression by '*' to get each clause
+    expr = expr.replace(' ', '').replace('+', ' + ').replace('*', ' * ').replace('(', '').replace(')', '')
     clauses = [clause.strip() for clause in expr.split('*')]
     
     components = []
-    
-    # For each clause, split by '+' and gather variables
     for clause in clauses:
-        clause_components = []
         clause_vars = re.split(r'\s*\+\s*', clause)
-        # Now organize the variables based on the given order in 'variables'
-        for var in variables:
-            # Add negated variable if it's present, else add the regular variable
-            if f'!{var}' in clause_vars:
-                clause_components.append(f'!{var}')
-            elif var in clause_vars:
-                clause_components.append(var)
-        
-        components.append(tuple(clause_components))  # Use tuple for immutability in set later
+        components.append(clause_vars)
     
+    # Sort each component based on the order of variables
+    components = [sorted(component, key=lambda x: variables.index(x.strip('!'))) for component in components]
     return components
 
 def expand_component(component, variables):
     """
-    Expands a single component to include all variables in the given domain,
-    adding parentheses to maintain proper expression format.
+    Recursively expands a component to include all variables in the correct order.
     """
-    if len(variables) == 0:
-        return [f"({component})"]  # Base case: Enclose in parentheses
+    expanded_components = [component]  # Start with the original component
 
-    current_var = variables[0]
-    remaining_vars = variables[1:]
+    for var in variables:
+        new_expanded = []
+        for comp in expanded_components:
+            if var not in comp and f'!{var}' not in comp:
+                # Split the component into two: one with the variable and one with its negation
+                new_expanded.append(sorted(comp + [var], key=lambda x: variables.index(x.strip('!'))))
+                new_expanded.append(sorted(comp + [f'!{var}'], key=lambda x: variables.index(x.strip('!'))))
+            else:
+                new_expanded.append(comp)  # Keep it as is if the variable is already present
+        expanded_components = new_expanded
 
-    # If the current variable or its negation is in the component, proceed with the next variable.
-    if current_var in component or f'!{current_var}' in component:
-        return expand_component(component, remaining_vars)
-
-    # Otherwise, split the component into two: one with the variable and one with its negation.
-    expanded_with_var = expand_component(f"{component} + {current_var}", remaining_vars)
-    expanded_with_not_var = expand_component(f"{component} + !{current_var}", remaining_vars)
-
-    return expanded_with_var + expanded_with_not_var
+    return expanded_components
 
 def truth_table_order_key(component, variables):
     """
@@ -70,29 +56,27 @@ def canonicalPOS(expr, variables):
     """
     Converts a POS expression to its canonical POS form.
     """
-    # Extract components first
+    # Step 1: Extract components first
     components = extract_components(expr, variables)
     
-    # Use a set to store canonical form components
+    # Step 2: Expand components to include all variables
     canonical_expr = set()
 
     for component in components:
-        expanded_components = expand_component(' + '.join(component), variables)
-        canonical_expr.update(expanded_components)
+        expanded_components = expand_component(component, variables)
+        for expanded in expanded_components:
+            canonical_expr.add(tuple(expanded))  # Use tuple to store in set
 
-    # Sort the components based on the truth table order
+    # Step 3: Sort the components based on the truth table order
     sorted_components = sorted(canonical_expr, key=lambda x: truth_table_order_key(x, variables), reverse=True)
 
-    # Convert the sorted components set to a string in canonical form
-    canonical_expr_str = ' * '.join(sorted_components)
+    # Step 4: Convert the sorted components into the final canonical form
+    canonical_expr_str = ' * '.join(['(' + ' + '.join(comp) + ')' for comp in sorted_components])
 
     return canonical_expr_str
 
 # Example usage
-variables = ['p', 'q', 'r']
-expr = "p + q + !r * r"
-components = extract_components(expr, variables)
-print("Extracted Components:", components)
-
+variables = ['p', 'q', 'r', 's']
+expr = "q + p * !r * (r + p + !s)"
 canonical_expr = canonicalPOS(expr, variables)
 print("Canonical POS Expression:", canonical_expr)
