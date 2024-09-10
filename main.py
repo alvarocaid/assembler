@@ -1,4 +1,5 @@
 import re
+from convertFunc import toPY, toWAL
 
 def extract_components(expr, variables):
     """
@@ -75,8 +76,23 @@ def canonicalPOS(expr, variables):
 
     return canonical_expr_str
 
-# Example usage
+# Example usage (test 1)
+print("Test 1: Canonical POS Expression")
 variables = ['p', 'q', 'r', 's']
-expr = "q + p * !r * (r + p + !s)"
+expr = "(q + p) * !r * (r + p + !s)"
 canonical_expr = canonicalPOS(expr, variables)
 print("Canonical POS Expression:", canonical_expr)
+print()
+
+# Example usage (test 2)
+print("Test 2: From Wolfram Cloud POS expr to canonical POS in py") 
+expr = "(!A||!B||C)&&(!A||!B||D)&&(A||!C||!D)&&(A||C||D)&&(B||!C||!D)"
+variables = ['A', 'B', 'C', 'D']
+expr = toPY(expr)
+print("Converting it to py:", expr)
+canonical_expr = canonicalPOS(expr, variables)
+print("Canonical POS Expression:", canonical_expr)
+print()
+
+exprWAL = toWAL(canonical_expr)
+print("Converting it to WAL:", exprWAL)
