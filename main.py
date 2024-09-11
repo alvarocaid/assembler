@@ -97,5 +97,6 @@ print()
 exprWAL = toWAL(canonical_expr)
 print("Converting it to WAL:", exprWAL)
 
+#Latex code
 exprLatex = PYtoLatexCode(expr)
 print("Converting it to latex code:", exprLatex)
