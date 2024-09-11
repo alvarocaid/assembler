@@ -1,5 +1,5 @@
 import re
-from convertFunc import toPY, toWAL
+from convertFunc import toPY, toWAL, PYtoLatexCode
 
 def extract_components(expr, variables):
     """
