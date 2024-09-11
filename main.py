@@ -1,5 +1,5 @@
 import re
-from convertFunc import toPY, toWAL
+from convertFunc import toPY, toWAL, PYtoLatexCode
 
 def extract_components(expr, variables):
     """
@@ -96,3 +96,6 @@ print()
 
 exprWAL = toWAL(canonical_expr)
 print("Converting it to WAL:", exprWAL)
+
+exprLatex = PYtoLatexCode(expr)
+print("Converting it to latex code:", exprLatex)
