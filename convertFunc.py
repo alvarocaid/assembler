@@ -7,5 +7,5 @@ def toPY(expr):
     return expr
 
 def PYtoLatexCode(expr):
-    expr = expr.replace('+', '\lor').replace('*', '\land').replace('!', '\lnot')
+    expr = expr.replace('+', ' \lor ').replace('*', ' \land ').replace('!', ' \lnot ')
     return expr
