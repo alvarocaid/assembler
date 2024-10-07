@@ -1,5 +1,0 @@
-expr1 = (p || q || r || s) && (p || q || r || !s) && (p || q || !r || s) && (p || q || !r || !s) && (p || !q || r || !s) && (p || !q || !r || s) && (p || !q || !r || !s) && (!p || q || !r || s) && (!p || q || !r || !s) && (!p || !q || !r || s) && (!p || !q || !r || !s);
-expr2 = (q || p) && !r && (r || p || !s);
-TraditionalForm[expr1]
-TraditionalForm[expr2]
-Equivalent[expr1, expr2] // TautologyQ

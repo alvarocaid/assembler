@@ -1,7 +1,0 @@
-expr = (A \[Nand] B) \[Xor] (C \[Equivalent] D) && (A \[Implies] C);
-TraditionalForm[expr]
-exprPOS = BooleanConvert[expr, "POS"];
-Print[exprPOS] (*pass it to the py program*)
-Equivalent[expr, exprPOS] // TautologyQ
-exprFromPy = (A || B || C || D) && (A || B || !C || !D) && (A || !B || C || D) && (A || !B || !C || !D) && (!A || B || !C || !D) && (!A || !B || C || D) && (!A || !B || C || !D) && (!A || !B || !C || D);
-Equivalent[expr, exprFromPy] // TautologyQ
