@@ -1,0 +1,2 @@
+The initial language was Wolfram Language. Though Python might be a better solution since it has no 60-day only storage feature.  
+The choise was made due to the fact that it was posible to convert any boolean function (xor, nand, etc) to a SOP or POS. Also that it is easy to compare boolean function with ` Equivalent[expr1, expr2] // TautologyQ`
